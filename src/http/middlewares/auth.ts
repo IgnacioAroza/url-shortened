@@ -1,6 +1,9 @@
+import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
 import { UserRepository } from '../../domain/repositories/UserRepository';
 import jwt from 'jsonwebtoken';
+
+dotenv.config();
 
 declare global {
   namespace Express {

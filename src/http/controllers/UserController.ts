@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import { CreateUserHandler } from '../../application/handlers/CreateUserHandler';
 import { UserRepository } from '../../domain/repositories/UserRepository';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+
+dotenv.config();
 
 export class UserController {
     constructor(private userRepository: UserRepository) {}
