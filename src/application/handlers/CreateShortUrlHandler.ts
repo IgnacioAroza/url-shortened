@@ -1,31 +1,15 @@
 import { CreateShortUrlCommand } from '../commands/CreateShortUrl';
 import { UrlRespository } from '../../domain/repositories/UrlRepository';
 import { Url } from '../../domain/entities/Url';
+import crypto from 'crypto';
 
 export class CreateShortUrlHandler {
-    private nanoid: ((size?: number) => string) | null = null;
-
-    constructor(private urlRepository: UrlRespository) {
-        this.initNanoid();
-    }
-
-    private async initNanoid() {
-        const nanoidModule = await import('nanoid');
-        this.nanoid = nanoidModule.nanoid;
-    }
+    constructor(private urlRepository: UrlRespository) {}
     
     async handle(command: CreateShortUrlCommand): Promise<string> {
-        if (!this.nanoid) {
-            await this.initNanoid();
-        }
-
-        if (!this.nanoid) {
-            throw new Error('Failed to initialize nanoid');
-        }
-
-        const shortCode = this.nanoid(8); // Genera un código de 8 caracteres
+        const shortCode = this.generateShortCode();
         const url: Url = {
-            id: this.nanoid(),
+            id: crypto.randomUUID(),
             originalUrl: command.originalUrl,
             shortCode,
             userId: command.userId,
@@ -35,6 +19,10 @@ export class CreateShortUrlHandler {
 
         await this.urlRepository.save(url);
         return shortCode;
+    }
+
+    private generateShortCode(): string {
+        return crypto.randomBytes(4).toString('hex');
     }
 }
 
