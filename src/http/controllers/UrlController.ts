@@ -11,8 +11,13 @@ export class UrlController {
             const userId = req.user?.id;
 
             if (!userId) {
-                res.status(401).json({ error: 'Unauthenticated user'});
-                return
+                res.status(401).json({ error: 'Unauthenticated user' });
+                return;
+            }
+
+            if (!url) {
+                res.status(400).json({ error: 'URL is required' });
+                return;
             }
 
             const handler = new CreateShortUrlHandler(this.urlRepository);
@@ -20,6 +25,7 @@ export class UrlController {
 
             res.status(201).json({ shortCode });
         } catch (error) {
+            console.error('Error creating short URL:', error);
             res.status(500).json({ error: 'Error creating short URL' });
         }
     }
@@ -27,16 +33,29 @@ export class UrlController {
     async redirectToOriginalUrl(req: Request, res: Response): Promise<void> {
         try {
             const { shortCode } = req.params;
+            console.log(`Received request for shortCode: ${shortCode}`);
+            
+            if (!shortCode) {
+                console.log('ShortCode is undefined');
+                res.status(400).send('Invalid short code');
+                return;
+            }
+
             const url = await this.urlRepository.findByShortCode(shortCode);
 
             if (!url) {
+                console.log(`URL not found for shortCode: ${shortCode}`);
                 res.status(404).send('URL not found');
                 return;
             }
 
-            await this.urlRepository.incrementClicks(shortCode),
-            res.redirect(url.originalUrl);
+            console.log(`Found URL: ${url.originalUrl}`);
+            await this.urlRepository.incrementClicks(shortCode);
+
+            console.log(`Redirecting to: ${url.originalUrl}`);
+            res.redirect(301, url.originalUrl);
         } catch (error) {
+            console.error('Error redirecting:', error);
             res.status(500).send('Error redirecting');
         }
     }
@@ -53,6 +72,7 @@ export class UrlController {
             const urls = await this.urlRepository.findByUserId(userId);
             res.json(urls);
         } catch (error) {
+            console.error('Error getting user URLs:', error);
             res.status(500).json({ error: 'Error getting user URLs' });
         }
     }
