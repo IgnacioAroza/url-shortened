@@ -1,21 +1,18 @@
 services:
   app:
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "3001:3001"
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - NODE_ENV=development
     links:
       - mongo_db
     depends_on:
       - mongo_db
     networks:
       - app-network
+    env_file: 
+      - ../.env
 
   mongo_db:
     image: mongo

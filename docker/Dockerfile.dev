@@ -15,4 +15,4 @@ RUN npm install -g nodemon
 EXPOSE 3001
 
 # Usar nodemon para desarrollo
-CMD ["nodemon", "-L", "--watch", "src", "--ext", "ts", "--exec", "ts-node", "src/index.ts"]
+CMD ["nodemon", "--watch", "src", "--ext", "ts", "--exec", "ts-node", "src/index.ts"]
