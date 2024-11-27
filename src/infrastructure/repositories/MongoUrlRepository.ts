@@ -24,10 +24,8 @@ export class MongoUrlRepository implements UrlRespository {
     }
 
     async findByShortCode(shortCode: string): Promise<Url | null> {
-        console.log(`Searching for shortCode: ${shortCode}`);
         try {
             const result = await UrlModel.findOne({ shortCode }).lean().exec();
-            console.log(`Result for ${shortCode}:`, result);
             return result;
         } catch (error) {
             console.error(`Error finding shortCode ${shortCode}:`, error);

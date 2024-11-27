@@ -33,10 +33,8 @@ export class UrlController {
     async redirectToOriginalUrl(req: Request, res: Response): Promise<void> {
         try {
             const { shortCode } = req.params;
-            console.log(`Received request for shortCode: ${shortCode}`);
             
             if (!shortCode) {
-                console.log('ShortCode is undefined');
                 res.status(400).send('Invalid short code');
                 return;
             }
@@ -44,15 +42,12 @@ export class UrlController {
             const url = await this.urlRepository.findByShortCode(shortCode);
 
             if (!url) {
-                console.log(`URL not found for shortCode: ${shortCode}`);
                 res.status(404).send('URL not found');
                 return;
             }
 
-            console.log(`Found URL: ${url.originalUrl}`);
             await this.urlRepository.incrementClicks(shortCode);
 
-            console.log(`Redirecting to: ${url.originalUrl}`);
             res.redirect(301, url.originalUrl);
         } catch (error) {
             console.error('Error redirecting:', error);

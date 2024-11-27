@@ -1,0 +1,18 @@
+FROM node:18
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Instalar nodemon globalmente para desarrollo
+RUN npm install -g nodemon
+
+# Exponer el puerto
+EXPOSE 3001
+
+# Usar nodemon para desarrollo
+CMD ["nodemon", "-L", "--watch", "src", "--ext", "ts", "--exec", "ts-node", "src/index.ts"]
