@@ -9,7 +9,6 @@ export function cleanUrl(url: string): string {
         const parsedUrl = new URL(url);
         return `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}`;
     } catch (error) {
-        console.error('Error cleaning URL:', error);
         return url;
     }
 }
