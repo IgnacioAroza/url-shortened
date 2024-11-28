@@ -14,39 +14,40 @@ const urlSchema = new mongoose.Schema<Url>({
 const UrlModel = mongoose.model<Url>('Url', urlSchema);
 
 export class MongoUrlRepository implements UrlRespository {
+    private model: mongoose.Model<Url>;
+
+    constructor(model = UrlModel) {
+        this.model = model;
+    }
+
     async save(url: Url): Promise<void> {
         try {
-            await UrlModel.create(url);
+            await this.model.create(url);
         } catch (error) {
-            console.error('Error saving URL:', error);
             throw error;
         }
     }
 
     async findByShortCode(shortCode: string): Promise<Url | null> {
         try {
-            const result = await UrlModel.findOne({ shortCode }).lean().exec();
-            return result;
+            return await this.model.findOne({ shortCode }).lean().exec();
         } catch (error) {
-            console.error(`Error finding shortCode ${shortCode}:`, error);
             throw error;
         }
     }
 
     async findByUserId(userId: string): Promise<Url[]> {
         try {
-            return await UrlModel.find({ userId }).lean().exec();
+            return await this.model.find({ userId }).lean().exec();
         } catch (error) {
-            console.error(`Error finding URLs for user ${userId}:`, error);
             throw error;
         }
     }
 
     async incrementClicks(shortCode: string): Promise<void> {
         try {
-            await UrlModel.updateOne({ shortCode }, { $inc: { clicks: 1 } }).exec();
+            await this.model.updateOne({ shortCode }, { $inc: { clicks: 1 } }).exec();
         } catch (error) {
-            console.error(`Error incrementing clicks for ${shortCode}:`, error);
             throw error;
         }
     }

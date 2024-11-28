@@ -12,15 +12,33 @@ const userSchema = new mongoose.Schema<User>({
 const UserModel = mongoose.model<User>('User', userSchema);
 
 export class MongoUserRepository implements UserRepository {
+    private model: mongoose.Model<User>;
+
+    constructor(model = UserModel) {
+        this.model = model;
+    }
+
     async save(user: User): Promise<void> {
-        await UserModel.create(user);
+        try {
+            await this.model.create(user);
+        } catch (error) {
+            throw error;
+        }
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        return UserModel.findOne({ email }).lean();
+        try {
+            return await this.model.findOne({ email }).lean().exec();
+        } catch (error) {
+            throw error;
+        }
     }
 
     async findById(id: string): Promise<User | null> {
-        return UserModel.findOne({ id }).lean();
+        try {
+            return await this.model.findOne({ id }).lean().exec();
+        } catch (error) {
+            throw error;
+        }
     }
 }
