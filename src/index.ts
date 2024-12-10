@@ -10,33 +10,27 @@ import { MongoUrlRepository } from './infrastructure/repositories/MongoUrlReposi
 dotenv.config();
 
 const app = express();
-app.use(express.json());
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-    : [];
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : [];
 
-    const corsOptions = {
-      origin: function (origin: string, callback: (arg0: Error | null, arg1: boolean | undefined) => void) {
-          // Allow requests with no origin (like mobile apps, curl, postman)
-          if (!origin) {
-              return callback(null, true);
-          }
-  
-          // Remove any trailing slashes from the origin
-          const normalizedOrigin = origin.replace(/\/$/, '');
-  
-          if (allowedOrigins.includes(normalizedOrigin)) {
-              callback(null, true);
-          } else {
-              callback(new Error('Not allowed by CORS'), false);
-          }
-      },
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-      optionsSuccessStatus: 200
-  };
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'), false);
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
 
 connectDB();
 
