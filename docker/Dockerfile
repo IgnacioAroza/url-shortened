@@ -4,20 +4,26 @@ FROM node:18
 # Establece el directorio de trabajo del contenedor
 WORKDIR /usr/src/app
 
-# Copia los archivos package.json y package-lock.json
-COPY package*.json ./
+# Copia los archivos package*.json
+COPY ../package*.json ./
 
-# Instala las dependecias del proyect
+# Copia el archivo tsconfig.json
+COPY ../tsconfig.json ./
+
+# Instala las dependencias del proyecto
 RUN npm install
 
-# Copia el resto de los archivos del proyecto
-COPY . .
+# Copia el código fuente
+COPY ../src/ ./src/
+
+# Copia los archivos de configuración adicionales
+COPY ../.env* ./
 
 # Compila el proyecto TypeScript
 RUN npm run build
 
-# Expone el puerto en el que se ejecutara la aplicacion
+# Expone el puerto en el que se ejecutará la aplicación
 EXPOSE 3001
 
-# Comando para ejecutar la aplicacion
+# Comando para ejecutar la aplicación
 CMD ["node", "dist/index.js"]
